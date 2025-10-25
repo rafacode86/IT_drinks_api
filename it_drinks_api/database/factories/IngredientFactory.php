@@ -17,7 +17,10 @@ class IngredientFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => $this->faker->unique()->word(),
+            'type' => $this->faker->optional()->randomElement(['run', 'vodka', 'gin', 'cola', 'herb', 'tonic', 'orange juice']),
+            'origin' => $this->faker->optional()->country(),
+            'classification' => $this->faker->randomElement(['alcoholic', 'soda', 'juice', 'garnish']),
         ];
     }
 }

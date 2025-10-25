@@ -17,7 +17,9 @@ class CocktailFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => $this->faker->unique()->words(2, true),
+            'description' => $this->faker->optional()->sentence(),
+            'type' => $this->faker->randomElement(['alcoholic', 'non-alcoholic']),
         ];
     }
 }

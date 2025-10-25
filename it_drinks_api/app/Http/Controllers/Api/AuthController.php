@@ -32,6 +32,28 @@ class AuthController extends Controller
             'user' => $user,
             'token' => $token,
         ], 201);
-        
+
+    }
+
+    public function login(Request $request) {
+
+        $request->validate([
+            'email' => 'required|string|email',
+            'password' => 'required|string',
+        ]);
+
+        if (!Auth::attempt($request->only('email', 'password'))) {
+            throw ValidationException::withMessages([
+                'email' => ['Invalid credentials.'],
+            ]);
+        }
+
+        $user = Auth::user();
+        $token = $user->createToken('API Token')->accessToken;
+
+        return response()->json([
+            'user' => $user,
+            'token' => $token,
+        ], 201);
     }
 }

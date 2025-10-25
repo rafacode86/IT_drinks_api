@@ -17,8 +17,8 @@ class Cocktail extends Model
     ];
 
     public function ingredients(){
-        return $this->belongsToMany(Ingredient::class)
-                    ->whitTimestamps()
-                    ->withPivot('measure');
+        return $this->belongsToMany(Ingredient::class, 'cocktail_ingredient')
+                    ->withTimestamps()
+                    ->withPivot('measure_ml');
     }
 }

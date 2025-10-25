@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('cocktail_id')->constrained()->onDelete('cascade');
             $table->foreignId('ingredient_id')->constrained()->onDelete('cascade');
-            $table->float('measure in ml')->nullable();
+            $table->float('measure_ml')->nullable();
             $table->timestamps();
         });
     }

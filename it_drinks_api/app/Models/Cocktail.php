@@ -9,4 +9,16 @@ class Cocktail extends Model
 {
     /** @use HasFactory<\Database\Factories\CocktailFactory> */
     use HasFactory;
+
+    protected $fillable = [
+        'name',
+        'description',
+        'type',
+    ];
+
+    public function ingredients(){
+        return $this->belongsToMany(Ingredient::class)
+                    ->whitTimestamps()
+                    ->withPivot('measure');
+    }
 }

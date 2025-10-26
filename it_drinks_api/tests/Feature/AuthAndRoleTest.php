@@ -66,4 +66,27 @@ class AuthAndRoleTest extends TestCase
 
         $response->assertStatus(401);
     }
+
+    /**
+     * @test*/
+    public function a_user_cannot_access_admin_dashboard(): void
+    {
+        $user = User::factory()->create(['role' => 'user']);
+        Passport::actingAs($user);
+
+        $response = $this->getJson('/api/admin/dashboard');
+        $response->assertStatus(403);
+    }
+
+    /**
+     * @test*/
+    public function an_admin_can_access_admin_dashboard(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        Passport::actingAs($admin);
+
+        $response = $this->getJson('/api/admin/dashboard');
+        $response->assertStatus(200)
+                 ->assertJson(['message' => 'Bienvenido, Admin']);
+    }
 }

@@ -22,7 +22,28 @@ class CocktailController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'ingredients' => 'array',
+            'ingredients.*.id' => 'exists:ingredients,id',
+            'ingredients.*.measure_ml' => 'numeric|min:0',
+        ]);
+
+        $cocktail = Cocktail::create([
+            'name' => $validated['name'],
+            'description' => $validated['description'] ?? null,
+        ]);
+
+        if (!empty($validated['ingredients'])) {
+            $pivotData = [];
+            foreach ($validated['ingredients'] as $ingredient) {
+                $pivotData[$ingredient['id']] = ['measure_ml' => $ingredient['measure_ml']];
+            }
+            $cocktail->ingredients()->sync($pivotData);
+        }
+
+        return response()->json($cocktail->load('ingredients'), 201);
     }
 
     /**

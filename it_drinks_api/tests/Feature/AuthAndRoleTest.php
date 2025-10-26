@@ -26,4 +26,22 @@ class AuthAndRoleTest extends TestCase
         $response ->assertStatus(201)
                     ->assertJsonStructure(['user', 'token']);
     }
+
+    /**
+     * @test*/
+    public function it_logs_in_a_registered_user(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'login_user@example.com',
+            'password' => bcrypt('12345678'),
+        ]);
+
+        $response = $this->postJson('/api/login', [
+            'email' => 'login_user@example.com',
+            'password' => '12345678',
+        ]);
+
+        $response->assertStatus(200)
+                 ->assertJsonStructure(['user', 'token']);
+    }
 }

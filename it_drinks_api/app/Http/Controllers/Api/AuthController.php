@@ -28,9 +28,12 @@ class AuthController extends Controller
             'role' => 'user',
         ]);
 
-        $token = $user->createToken('API Token')->accessToken;
+        $tokenFactory = app(PersonalAccessTokenFactory::class);
+        $tokenResult = $tokenFactory->make($user->id, 'API Token', ['user']);
+        $token = $tokenResult->accessToken;
 
         return response()->json([
+            'message' => 'Usuario registrado correctamente',
             'user' => $user,
             'token' => $token,
         ], 201);

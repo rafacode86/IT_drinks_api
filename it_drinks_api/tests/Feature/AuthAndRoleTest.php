@@ -44,4 +44,26 @@ class AuthAndRoleTest extends TestCase
         $response->assertStatus(200)
                  ->assertJsonStructure(['user', 'token']);
     }
+
+    /**
+     * @test*/
+    public function it_accesses_a_protected_route_with_valid_token(): void
+    {
+        $user = User::factory()->create();
+        Passport::actingAs($user);
+
+        $response = $this->getJson('/api/user');
+
+        $response->assertStatus(200)
+                 ->assertJsonStructure(['message', 'user']);
+    }
+
+    /**
+     * @test*/
+    public function it_fails_to_access_protected_route_without_token(): void
+    {
+        $response = $this->getJson('/api/user');
+
+        $response->assertStatus(401);
+    }
 }

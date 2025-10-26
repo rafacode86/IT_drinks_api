@@ -49,7 +49,14 @@ class IngredientController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $ingredient = Ingredient::find($id);
+
+        if (!$ingredient) {
+            return response()->json(['message' => 'Ingredient not found'], 404);
+        }
+
+        $ingredient->update($request->only('name'));
+        return response()->json($ingredient, 200);
     }
 
     /**

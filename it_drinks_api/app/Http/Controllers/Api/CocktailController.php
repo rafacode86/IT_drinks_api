@@ -89,6 +89,13 @@ class CocktailController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $cocktail = Cocktail::find($id);
+
+        if (!$cocktail) {
+            return response()->json(['message' => 'Cocktail not found'], 404);
+        }
+
+        $cocktail->delete();
+        return response()->json(['message' => 'Cocktail deleted successfully'], 200);
     }
 }

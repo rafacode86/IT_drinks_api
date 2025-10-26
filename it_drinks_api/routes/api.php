@@ -34,7 +34,7 @@ Route::middleware(['auth:api', 'role:admin'])->group(function () {
     Route::apiResource('cocktails', CocktailController::class);
 });
 
-Route::middleware(['auth:api', 'role:user'])->group(function () {
+Route::middleware(['auth:api'])->group(function () {
     // Solo lectura para usuarios normales
     Route::get('ingredients', [IngredientController::class, 'index']);
     Route::get('cocktails', [CocktailController::class, 'index']);

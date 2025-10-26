@@ -142,4 +142,58 @@ class CocktailTest extends TestCase
         $response->assertStatus(200)
                  ->assertJsonFragment(['name' => 'Cuba libre',]);
     }
+
+    /**
+     * @test*/
+    public function admin_can_update_cocktails(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        Passport::actingAs($admin);
+
+        $cocktail = Cocktail::factory()->create([
+            'name' => 'Sandia',
+            ]);
+
+        $response = $this->putJson("/api/cocktails/{$cocktail->id}", [
+            'name' => 'Sangria',
+        ]);
+
+        $response->assertStatus(200)
+                 ->assertJsonFragment(['name' => 'Sangria',]);
+
+    }
+
+    /**
+     * @test*/
+    public function user_cannot_update_cocktails(): void
+    {
+        $user = User::factory()->create(['role' => 'user']);
+        Passport::actingAs($user);
+
+        $cocktail = Cocktail::factory()->create([
+            'name' => 'San Francisco',
+            ]);
+
+        $response = $this->putJson("/api/cocktails/{$cocktail->id}", [
+            'name' => 'San Francisco Deluxe',
+        ]);
+
+        $response->assertStatus(403);
+    }
+
+    /**
+     * @test*/
+    public function guest_cannot_update_cocktails(): void
+    {
+
+        $cocktail = Cocktail::factory()->create([
+            'name' => 'Tornillo',
+            ]);
+
+        $response = $this->putJson("/api/cocktails/{$cocktail->id}", [
+            'name' => 'Destornillador',
+        ]);
+
+        $response->assertStatus(401);
+    }
 }

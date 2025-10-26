@@ -95,4 +95,51 @@ class CocktailTest extends TestCase
 
         $response->assertStatus(401);
     }
+
+    /**
+     * @test*/
+    public function guest_cannot_view_cocktail(): void
+    {
+        $cocktail = Cocktail::factory()->create([
+            'name' => 'Blody Mary',
+            ]);
+
+        $response = $this->getJson("/api/cocktails/{$cocktail->id}");
+
+        $response->assertStatus(401);
+    }
+
+    /**
+     * @test*/
+    public function user_can_view_cocktail(): void
+    {
+        $user = User::factory()->create(['role' => 'user']);
+        Passport::actingAs($user);
+
+        $cocktail = Cocktail::factory()->create([
+            'name' => 'Sex on the Beach',
+            ]);
+
+        $response = $this->getJson("/api/cocktails/{$cocktail->id}");
+
+        $response->assertStatus(200)
+                 ->assertJsonFragment(['name' => 'Sex on the Beach',]);
+    }
+
+    /**
+     * @test*/
+    public function admin_can_view_cocktail(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        Passport::actingAs($admin);
+
+        $cocktail = Cocktail::factory()->create([
+            'name' => 'Cuba libre',
+            ]);
+
+        $response = $this->getJson("/api/cocktails/{$cocktail->id}");
+
+        $response->assertStatus(200)
+                 ->assertJsonFragment(['name' => 'Cuba libre',]);
+    }
 }

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Laravel\Passport\PersonalAccessTokenFactory;
 
 class AuthController extends Controller
 {
@@ -37,23 +38,33 @@ class AuthController extends Controller
 
     public function login(Request $request) {
 
-        $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string',
+        $credentials = $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
+
+    if (!Auth::attempt($credentials)) {
+        throw ValidationException::withMessages([
+            'email' => ['Credenciales incorrectas.'],
         ]);
+    }
 
-        if (!Auth::attempt($request->only('email', 'password'))) {
-            throw ValidationException::withMessages([
-                'email' => ['Invalid credentials.'],
-            ]);
-        }
+    $user = Auth::user();
 
-        $user = Auth::user();
-        $token = $user->createToken('API Token')->accessToken;
+    $tokenFactory = app(PersonalAccessTokenFactory::class);
 
-        return response()->json([
-            'user' => $user,
-            'token' => $token,
-        ], 201);
+    $scopes = $user->role === 'admin'
+        ? ['admin', 'user']
+        : ['user'];
+
+    $tokenResult = $tokenFactory->make($user->id, 'API Token', $scopes);
+    $token = $tokenResult->accessToken;
+
+    return response()->json([
+        'message' => 'Inicio de sesión correcto',
+        'user' => $user,
+        'token' => $token,
+        'scopes' => $scopes,
+    ], 200);
     }
 }

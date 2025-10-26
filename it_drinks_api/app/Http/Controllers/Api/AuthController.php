@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Laravel\Passport\PersonalAccessTokenFactory;
+use Illuminate\Http\JsonResponse;
 
 class AuthController extends Controller
 {
@@ -41,30 +42,38 @@ class AuthController extends Controller
         $credentials = $request->validate([
         'email' => 'required|email',
         'password' => 'required',
-    ]);
-
-    if (!Auth::attempt($credentials)) {
-        throw ValidationException::withMessages([
-            'email' => ['Credenciales incorrectas.'],
         ]);
+
+        if (!Auth::attempt($credentials)) {
+            throw ValidationException::withMessages([
+                'email' => ['Credenciales incorrectas.'],
+            ]);
+        }
+
+        $user = Auth::user();
+
+        $tokenFactory = app(PersonalAccessTokenFactory::class);
+
+        $scopes = $user->role === 'admin'
+            ? ['admin', 'user']
+            : ['user'];
+
+        $tokenResult = $tokenFactory->make($user->id, 'API Token', $scopes);
+        $token = $tokenResult->accessToken;
+
+        return response()->json([
+            'message' => 'Inicio de sesión correcto',
+            'user' => $user,
+            'token' => $token,
+            'scopes' => $scopes,
+        ], 200);
     }
 
-    $user = Auth::user();
+    public function logout(Request $request): JsonResponse
+    {
+        $token = $request->user()->token();
+        $token->revoke();
 
-    $tokenFactory = app(PersonalAccessTokenFactory::class);
-
-    $scopes = $user->role === 'admin'
-        ? ['admin', 'user']
-        : ['user'];
-
-    $tokenResult = $tokenFactory->make($user->id, 'API Token', $scopes);
-    $token = $tokenResult->accessToken;
-
-    return response()->json([
-        'message' => 'Inicio de sesión correcto',
-        'user' => $user,
-        'token' => $token,
-        'scopes' => $scopes,
-    ], 200);
+        return response()->json(['message' => 'Logged out successfully.'], 200);
     }
 }

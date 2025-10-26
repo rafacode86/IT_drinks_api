@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Cocktail;
 
 class CocktailController extends Controller
 {
@@ -12,7 +13,8 @@ class CocktailController extends Controller
      */
     public function index()
     {
-        //
+        $cokctails = Cocktail::with('ingredients')->get();
+        return response()->json($cokctails, 200);
     }
 
     /**
@@ -28,7 +30,13 @@ class CocktailController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $cocktail = Cocktail::with('ingredients')->find($id);
+
+        if (!$cocktail) {
+            return response()->json(['message' => 'Cocktail not found'], 404);
+        }
+
+        return response()->json($cocktail, 200);
     }
 
     /**

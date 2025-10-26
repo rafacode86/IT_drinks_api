@@ -196,4 +196,50 @@ class CocktailTest extends TestCase
 
         $response->assertStatus(401);
     }
+
+    /**
+     * @test*/
+    public function admin_can_delete_cocktails(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        Passport::actingAs($admin);
+
+        $cocktail = Cocktail::factory()->create([
+            'name' => 'Jack Rose',
+            ]);
+
+        $response = $this->deleteJson("/api/cocktails/{$cocktail->id}");
+
+        $response->assertStatus(200);
+        $this->assertDatabaseMissing('ingredients', ['id' => $cocktail->id]);
+    }
+
+    /**
+     * @test*/
+    public function user_cannot_delete_cocktails(): void
+    {
+        $user = User::factory()->create(['role' => 'user']);
+        Passport::actingAs($user);
+
+        $cocktail = Cocktail::factory()->create([
+            'name' => 'Jaguerbomb',
+            ]);
+
+        $response = $this->deleteJson("/api/cocktails/{$cocktail->id}");
+
+        $response->assertStatus(403);
+    }
+
+    /**
+     * @test*/
+    public function guest_cannot_delete_cocktails(): void
+    {
+        $cocktail = Cocktail::factory()->create([
+            'name' => 'Piña Colada',
+            ]);
+
+        $response = $this->deleteJson("/api/cocktails/{$cocktail->id}");
+
+        $response->assertStatus(401);
+    }
 }

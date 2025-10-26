@@ -65,7 +65,23 @@ class CocktailController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $cocktail = Cocktail::find($id);
+
+        if (!$cocktail) {
+            return response()->json(['message' => 'Cocktail not found'], 404);
+        }
+
+        $cocktail->update($request->only(['name', 'description']));
+
+        if ($request->has('ingredients')) {
+            $pivotData = [];
+            foreach ($request->ingredients as $ingredient) {
+                $pivotData[$ingredient['id']] = ['measure_ml' => $ingredient['measure_ml']];
+            }
+            $cocktail->ingredients()->sync($pivotData);
+        }
+
+        return response()->json($cocktail->load('ingredients'), 200);
     }
 
     /**

@@ -58,4 +58,50 @@ class IngredientTest extends TestCase
 
         $response->assertStatus(401);
     }
+
+    /**
+     * @test*/
+    public function admin_can_create_an_ingredient(): void
+    {   
+        $admin = User::factory()->create(['role' => 'admin']);
+        Passport::actingAs($admin);
+
+        $response = $this->postJson('/api/ingredients', [
+            'name' => 'Lime Juice',
+        ]);
+
+        $response->assertStatus(201)
+                    ->assertJsonFragment([
+                        'name' => 'Lime Juice',
+                    ]);
+    }
+
+    /**
+     * @test*/
+    public function user_cannot_create_an_ingredient(): void
+    {   
+        $user = User::factory()->create(['role' => 'user']);
+        Passport::actingAs($user);
+
+        $response = $this->postJson('/api/ingredients', [
+            'name' => 'Mint',
+        ]);
+
+        $response->assertStatus(403);
+    
+    }
+
+    /**
+     * @test*/
+    public function guest_cannot_create_an_ingredient(): void
+    {   
+
+        $response = $this->postJson('/api/ingredients', [
+            'name' => 'Mint',
+        ]);
+
+        $response->assertStatus(401);
+    
+    }
+
 }

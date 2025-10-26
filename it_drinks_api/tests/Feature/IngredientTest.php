@@ -150,4 +150,105 @@ class IngredientTest extends TestCase
         $response->assertStatus(200)
                  ->assertJsonFragment(['name' => 'Peper',]);
     }    
+
+     /**
+     * @test*/
+    public function admin_can_update_ingredients(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        Passport::actingAs($admin);
+
+        $ingredient = Ingredient::factory()->create([
+            'name' => 'Salt',
+            ]);
+
+        $response = $this->putJson("/api/ingredients/{$ingredient->id}", [
+            'name' => 'Marine salt',
+        ]);
+
+        $response->assertStatus(200)
+                 ->assertJsonFragment(['name' => 'Marine salt',]);
+
+    }
+
+    /**
+     * @test*/
+    public function user_cannot_update_ingredients(): void
+    {
+        $user = User::factory()->create(['role' => 'user']);
+        Passport::actingAs($user);
+
+        $ingredient = Ingredient::factory()->create([
+            'name' => 'Sugar',
+            ]);
+
+        $response = $this->putJson("/api/ingredients/{$ingredient->id}", [
+            'name' => 'Brown sugar',
+        ]);
+
+        $response->assertStatus(403);
+
+    }
+
+    /**
+     * @test*/
+    public function guest_cannot_update_ingredients(): void
+    {
+
+        $ingredient = Ingredient::factory()->create([
+            'name' => 'Cinnamon',
+            ]);
+
+        $response = $this->putJson("/api/ingredients/{$ingredient->id}", [
+            'name' => 'Cayena',
+        ]);
+
+        $response->assertStatus(401);
+    }
+
+    /**
+     * @test*/
+    public function admin_can_delete_ingredients(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        Passport::actingAs($admin);
+
+        $ingredient = Ingredient::factory()->create([
+            'name' => 'Salt',
+            ]);
+
+        $response = $this->deleteJson("/api/ingredients/{$ingredient->id}");
+
+        $response->assertStatus(200);
+        $this->assertDatabaseMissing('ingredients', ['id' => $ingredient->id]);
+    }
+
+    /**
+     * @test*/
+    public function user_cannot_delete_ingredients(): void
+    {
+        $user = User::factory()->create(['role' => 'user']);
+        Passport::actingAs($user);
+
+        $ingredient = Ingredient::factory()->create([
+            'name' => 'Vodka',
+            ]);
+
+        $response = $this->deleteJson("/api/ingredients/{$ingredient->id}");
+
+        $response->assertStatus(403);
+    }
+
+    /**
+     * @test*/
+    public function guest_cannot_delete_ingredients(): void
+    {
+        $ingredient = Ingredient::factory()->create([
+            'name' => 'Gin',
+            ]);
+
+        $response = $this->deleteJson("/api/ingredients/{$ingredient->id}");
+
+        $response->assertStatus(401);
+    }
 }

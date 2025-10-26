@@ -56,4 +56,43 @@ class CocktailTest extends TestCase
 
         $response->assertStatus(401);
     }
+
+    /**
+     * @test*/
+    public function admin_can_create_a_cocktail(): void
+    {   
+        $admin = User::factory()->create(['role' => 'admin']);
+        Passport::actingAs($admin);
+
+        $response = $this->postJson('/api/cocktails', [
+            'name' => 'Negroni',
+        ]);
+
+        $response->assertStatus(201)
+                 ->assertJsonFragment(['name' => 'Negroni']);
+    }
+
+     /** 
+      * @test */
+    public function user_cannot_create_cocktail(): void
+    {
+        $user = User::factory()->create(['role' => 'user']);
+        Passport::actingAs($user);
+
+        $response = $this->postJson('/api/cocktails', [
+            'name' => 'Gintonic',
+        ]);
+
+        $response->assertStatus(403);
+    }
+
+     /** @test */
+    public function guest_cannot_create_cocktail(): void
+    {
+        $response = $this->postJson('/api/cocktails', [
+            'name' => 'Gintonic',
+        ]);
+
+        $response->assertStatus(401);
+    }
 }

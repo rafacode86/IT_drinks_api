@@ -47,5 +47,8 @@ Route::middleware(['auth:api', 'role:admin'])->group(function () {
     Route::post('ingredients', [IngredientController::class, 'store']);
     Route::put('ingredients/{id}', [IngredientController::class, 'update']);
     Route::delete('ingredients/{id}', [IngredientController::class, 'destroy']);
+    Route::post('cocktails', [CocktailController::class, 'store']);
+    Route::put('cocktails/{id}', [CocktailController::class, 'update']);
+    Route::delete('cocktails/{id}', [CocktailController::class, 'destroy']);
     
 });

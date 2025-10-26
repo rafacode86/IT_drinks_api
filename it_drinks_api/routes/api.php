@@ -28,15 +28,24 @@ Route::middleware('auth:api')->group(function () {
     });
 });
 
-Route::middleware(['auth:api', 'role:admin'])->group(function () {
+/*Route::middleware(['auth:api', 'role:admin'])->group(function () {
     // CRUD completo para admin
     Route::apiResource('ingredients', IngredientController::class);
     Route::apiResource('cocktails', CocktailController::class);
-});
+});*/
 
 Route::middleware(['auth:api'])->group(function () {
     // Solo lectura para usuarios normales
     Route::get('ingredients', [IngredientController::class, 'index']);
     Route::get('cocktails', [CocktailController::class, 'index']);
+    Route::get('ingredients/{id}', [IngredientController::class, 'show']);
     Route::get('cocktails/{id}', [CocktailController::class, 'show']);
+});
+
+Route::middleware(['auth:api', 'role:admin'])->group(function () {
+    // CRUD completo para admin
+    Route::post('ingredients', [IngredientController::class, 'store']);
+    Route::put('ingredients/{id}', [IngredientController::class, 'update']);
+    Route::delete('ingredients/{id}', [IngredientController::class, 'destroy']);
+    
 });

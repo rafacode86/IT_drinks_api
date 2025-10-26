@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Ingredient;
 
 class IngredientController extends Controller
 {
@@ -12,7 +13,8 @@ class IngredientController extends Controller
      */
     public function index()
     {
-        //
+        $ingredients = Ingredient::all();
+        return response()->json($ingredients, 200);
     }
 
     /**
@@ -20,7 +22,7 @@ class IngredientController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
     }
 
     /**
@@ -28,7 +30,13 @@ class IngredientController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $ingredient = Ingredient::find($id);
+
+        if (!$ingredient) {
+            return response()->json(['message' => 'Ingredient not found'], 404);
+        }
+
+        return response()->json($ingredient, 200);
     }
 
     /**

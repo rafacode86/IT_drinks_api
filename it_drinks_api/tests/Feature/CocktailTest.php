@@ -244,7 +244,8 @@ class CocktailTest extends TestCase
         $response->assertStatus(401);
     }
 
-    /** @test */
+    /** 
+     * @test */
     public function user_it_can_search_cocktails_by_ingredient(): void
     {
         $user = User::factory()->create(['role' => 'user']);
@@ -260,7 +261,8 @@ class CocktailTest extends TestCase
                 ->assertJsonFragment(['name' => 'Vodka Tonic']);
     }
 
-    /** @test */
+    /** 
+     * @test */
     public function admin_it_can_search_cocktails_by_ingredient(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
@@ -275,4 +277,39 @@ class CocktailTest extends TestCase
         $response->assertStatus(200)
                 ->assertJsonFragment(['name' => 'rum and coke']);
     }
+
+    /** 
+     * @test */
+public function it_calculates_the_alcohol_content_of_a_cocktail(): void
+{
+    $user = User::factory()->create(['role' => 'user']);
+    Passport::actingAs($user);
+
+    $vodka = Ingredient::factory()->create([
+        'name' => 'Vodka',
+        'classification' => 'alcoholic',
+        'alcohol_content' => 40, // 40%
+    ]);
+
+    $juice = Ingredient::factory()->create([
+        'name' => 'Orange Juice',
+        'classification' => 'juice',
+        'alcohol_content' => 0,
+    ]);
+
+    $cocktail = Cocktail::factory()->create(['name' => 'Screwdriver']);
+    $cocktail->ingredients()->attach([
+        $vodka->id => ['measure_ml' => 50],
+        $juice->id => ['measure_ml' => 100],
+    ]);
+
+    $response = $this->getJson("/api/cocktails/{$cocktail->id}/alcohol");
+
+    $response->assertStatus(200)
+             ->assertJsonFragment([
+                 'cocktail' => 'Screwdriver',
+                 'alcohol_content' => '13.33%',
+             ]);
+}
+
 }

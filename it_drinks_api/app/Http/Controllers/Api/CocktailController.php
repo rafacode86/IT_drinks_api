@@ -112,4 +112,19 @@ class CocktailController extends Controller
 
         return response()->json($cocktails, 200);
     }
+
+    public function showAlcoholContent($id)
+    {
+        $cocktail = Cocktail::with('ingredients')->find($id);
+
+        if (!$cocktail) {
+            return response()->json(['message' => 'Cocktail not found'], 404);
+        }
+
+        return response()->json([
+            'cocktail' => $cocktail->name,
+            'alcohol_content' => $cocktail->calculateAlcoholContent() . '%',
+        ]);
+    }
+
 }

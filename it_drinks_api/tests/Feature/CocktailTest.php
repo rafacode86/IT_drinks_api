@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\App;
 use Tests\TestCase;
 use App\Models\Cocktail;
+use App\Models\Ingredient;
 use App\Models\User;
 use Laravel\Passport\Passport;
 
@@ -241,5 +242,37 @@ class CocktailTest extends TestCase
         $response = $this->deleteJson("/api/cocktails/{$cocktail->id}");
 
         $response->assertStatus(401);
+    }
+
+    /** @test */
+    public function user_it_can_search_cocktails_by_ingredient(): void
+    {
+        $user = User::factory()->create(['role' => 'user']);
+        Passport::actingAs($user);
+
+        $ingredient = Ingredient::factory()->create(['name' => 'Vodka']);
+        $cocktail = Cocktail::factory()->create(['name' => 'Vodka Tonic']);
+        $cocktail->ingredients()->attach($ingredient->id);
+
+        $response = $this->getJson("/api/search/{$ingredient->id}");
+
+        $response->assertStatus(200)
+                ->assertJsonFragment(['name' => 'Vodka Tonic']);
+    }
+
+    /** @test */
+    public function admin_it_can_search_cocktails_by_ingredient(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        Passport::actingAs($admin);
+
+        $ingredient = Ingredient::factory()->create(['name' => 'Rum']);
+        $cocktail = Cocktail::factory()->create(['name' => 'rum and coke']);
+        $cocktail->ingredients()->attach($ingredient->id);
+
+        $response = $this->getJson("/api/search/{$ingredient->id}");
+
+        $response->assertStatus(200)
+                ->assertJsonFragment(['name' => 'rum and coke']);
     }
 }

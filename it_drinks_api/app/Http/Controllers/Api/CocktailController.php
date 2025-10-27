@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Cocktail;
+use App\Models\Ingredient;
 
 class CocktailController extends Controller
 {
@@ -97,5 +98,18 @@ class CocktailController extends Controller
 
         $cocktail->delete();
         return response()->json(['message' => 'Cocktail deleted successfully'], 200);
+    }
+
+    public function searchCocktailsByIngredient(string $ingredientId) {
+
+        $cocktails = Cocktail::whereHas('ingredients', function ($query) use ($ingredientId) {
+            $query->where('ingredients.id', $ingredientId);
+            })->with('ingredients')->get();
+
+        if ( $cocktails->isEmpty() ) {
+            return response()->json(['message' => 'No cocktails found with the specified ingredient'], 404);
+        }
+
+        return response()->json($cocktails, 200);
     }
 }

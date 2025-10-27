@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('type', 50)->nullable();
             $table->string('origin')->nullable();
             $table->enum('classification', ['alcoholic', 'soda', 'juice', 'garnish']);
+            $table->float('alcohol_content')->default(0);
             $table->timestamps();
         });
     }

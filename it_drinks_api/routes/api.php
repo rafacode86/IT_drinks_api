@@ -41,6 +41,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('ingredients/{id}', [IngredientController::class, 'show']);
     Route::get('cocktails/{id}', [CocktailController::class, 'show']);
     Route::get('search/{ingredientId}', [CocktailController::class, 'searchCocktailsByIngredient']);
+    Route::get('cocktails/{id}/alcohol', [CocktailController::class, 'showAlcoholContent']);
 });
 
 Route::middleware(['auth:api', 'role:admin'])->group(function () {

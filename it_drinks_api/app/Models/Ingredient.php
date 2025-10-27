@@ -15,6 +15,7 @@ class Ingredient extends Model
         'type',
         'origin',
         'classification',
+        'alcohol_content',
     ];
 
     public function cocktails(){

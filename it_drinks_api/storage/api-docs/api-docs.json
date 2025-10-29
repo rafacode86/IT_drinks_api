@@ -1,0 +1,952 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "🍸 IT Drinks API",
+        "description": "API RESTful para la gestión de cócteles e ingredientes con Passport",
+        "contact": {
+            "name": "Rafa",
+            "email": "rafa@example.com"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8000",
+            "description": "Servidor local de desarrollo"
+        }
+    ],
+    "paths": {
+        "/api/register": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Registrar un nuevo usuario",
+                "description": "Permite crear una nueva cuenta de usuario. Por defecto, el rol asignado es 'user'.",
+                "operationId": "8e4e3cb7b46126f4696379d3c7eeb4ad",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Rafa"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "rafa@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "12345678"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "example": "12345678"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Usuario registrado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Usuario registrado correctamente"
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Rafa"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "rafa@example.com"
+                                                },
+                                                "role": {
+                                                    "type": "string",
+                                                    "example": "user"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Datos inválidos"
+                    }
+                }
+            }
+        },
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Iniciar sesión",
+                "description": "Autentica un usuario existente y devuelve su token de acceso.",
+                "operationId": "222b2625838e3c57e017987f73598fda",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example": "rafa@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "12345678"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Inicio de sesión correcto",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Inicio de sesión correcto"
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Rafa"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "rafa@example.com"
+                                                },
+                                                "role": {
+                                                    "type": "string",
+                                                    "example": "user"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+                                        },
+                                        "scopes": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string",
+                                                "example": "user"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Credenciales incorrectas"
+                    }
+                }
+            }
+        },
+        "/api/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Cerrar sesión",
+                "description": "Revoca el token de acceso actual. Requiere autenticación mediante Passport.",
+                "operationId": "ad65cbbd4e9f201619eae184a5961a98",
+                "responses": {
+                    "200": {
+                        "description": "Sesión cerrada correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Logged out successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Token inválido o no proporcionado"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            }
+        },
+        "/api/cocktails": {
+            "get": {
+                "tags": [
+                    "Cocktails"
+                ],
+                "summary": "Listar todos los cócteles",
+                "description": "Devuelve una lista de todos los cócteles con sus ingredientes. Accesible para cualquier usuario autenticado.",
+                "operationId": "4998c94931df0edecbd6b474ae7352f9",
+                "responses": {
+                    "200": {
+                        "description": "Lista de cócteles",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "Mojito"
+                                            },
+                                            "description": {
+                                                "type": "string",
+                                                "example": "Cóctel clásico cubano"
+                                            },
+                                            "ingredients": {
+                                                "type": "array",
+                                                "items": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 2
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "Ron Blanco"
+                                                        },
+                                                        "pivot": {
+                                                            "properties": {
+                                                                "measure_ml": {
+                                                                    "type": "number",
+                                                                    "example": 50
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Cocktails"
+                ],
+                "summary": "Crear un nuevo cóctel",
+                "description": "Permite a los administradores crear un cóctel y asociar sus ingredientes con cantidades en mililitros.",
+                "operationId": "c63b237aa16074c5773b5b64034e8329",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Negroni"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Cóctel italiano amargo"
+                                    },
+                                    "ingredients": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 3
+                                                },
+                                                "measure_ml": {
+                                                    "type": "number",
+                                                    "example": 30
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Cóctel creado correctamente"
+                    },
+                    "403": {
+                        "description": "Prohibido (solo admin)"
+                    },
+                    "422": {
+                        "description": "Datos inválidos"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            }
+        },
+        "/api/cocktails/{id}": {
+            "get": {
+                "tags": [
+                    "Cocktails"
+                ],
+                "summary": "Ver un cóctel específico",
+                "description": "Muestra la información detallada de un cóctel con sus ingredientes.",
+                "operationId": "3cb09df5796da56d8650ac2e07f1a6a9",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del cóctel",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Cóctel encontrado correctamente"
+                    },
+                    "404": {
+                        "description": "Cóctel no encontrado"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Cocktails"
+                ],
+                "summary": "Actualizar un cóctel existente",
+                "description": "Permite a los administradores actualizar los datos de un cóctel y sus ingredientes asociados.",
+                "operationId": "a99a8b597d4640f81a4376c5604a900c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del cóctel",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Negroni Actualizado"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Versión mejorada del clásico Negroni"
+                                    },
+                                    "ingredients": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 2
+                                                },
+                                                "measure_ml": {
+                                                    "type": "number",
+                                                    "example": 25
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Cóctel actualizado correctamente"
+                    },
+                    "404": {
+                        "description": "Cóctel no encontrado"
+                    },
+                    "403": {
+                        "description": "Prohibido (solo admin)"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Cocktails"
+                ],
+                "summary": "Eliminar un cóctel",
+                "description": "Permite a los administradores eliminar un cóctel del sistema.",
+                "operationId": "dd5c8b76599b92946d6a69c32b47477a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del cóctel",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Cóctel eliminado correctamente"
+                    },
+                    "404": {
+                        "description": "Cóctel no encontrado"
+                    },
+                    "403": {
+                        "description": "Prohibido (solo admin)"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/search/{ingredientId}": {
+            "get": {
+                "tags": [
+                    "Cocktails"
+                ],
+                "summary": "Buscar cócteles por ingrediente",
+                "description": "Permite buscar cócteles que contengan un ingrediente específico.",
+                "operationId": "c0a6e619ea4e841665a2c0448c16a694",
+                "parameters": [
+                    {
+                        "name": "ingredientId",
+                        "in": "path",
+                        "description": "ID del ingrediente a buscar",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de cócteles que contienen el ingrediente"
+                    },
+                    "404": {
+                        "description": "No se encontraron cócteles con ese ingrediente"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            }
+        },
+        "/api/cocktails/{id}/alcohol-content": {
+            "get": {
+                "tags": [
+                    "Cocktails"
+                ],
+                "summary": "Calcular contenido alcohólico de un cóctel",
+                "description": "Calcula el contenido de alcohol en base al porcentaje de alcohol de sus ingredientes y sus cantidades (measure_ml).",
+                "operationId": "56d3cfedf9a71fb20d54a0805e3519f1",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del cóctel",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Porcentaje alcohólico calculado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "cocktail": {
+                                            "type": "string",
+                                            "example": "Margarita"
+                                        },
+                                        "alcohol_content": {
+                                            "type": "string",
+                                            "example": "12.5%"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Cóctel no encontrado"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            }
+        },
+        "/api/ingredients": {
+            "get": {
+                "tags": [
+                    "Ingredients"
+                ],
+                "summary": "Listar todos los ingredientes",
+                "description": "Devuelve una lista completa de ingredientes. Requiere autenticación (admin o user).",
+                "operationId": "ca30a55ef34259f063c742b684cc4bff",
+                "responses": {
+                    "200": {
+                        "description": "Lista de ingredientes obtenida correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "Vodka"
+                                            },
+                                            "type": {
+                                                "type": "string",
+                                                "example": "Spirit"
+                                            },
+                                            "classification": {
+                                                "type": "string",
+                                                "example": "alcoholic"
+                                            },
+                                            "alcohol_content": {
+                                                "type": "number",
+                                                "example": 40
+                                            },
+                                            "created_at": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            },
+                                            "updated_at": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Token no válido o ausente"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Ingredients"
+                ],
+                "summary": "Crear un nuevo ingrediente",
+                "description": "Permite a los administradores crear un nuevo ingrediente en la base de datos.",
+                "operationId": "c2d68c40741ce26dfd17624c54639c04",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "classification"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Gin"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "example": "Bebida"
+                                    },
+                                    "origin": {
+                                        "type": "string",
+                                        "example": "Inglaterra"
+                                    },
+                                    "classification": {
+                                        "type": "string",
+                                        "enum": [
+                                            "alcoholic",
+                                            "soda",
+                                            "juice",
+                                            "garnish"
+                                        ],
+                                        "example": "alcoholic"
+                                    },
+                                    "alcohol_content": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 37.5
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Ingrediente creado correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 5
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "Gin"
+                                        },
+                                        "classification": {
+                                            "type": "string",
+                                            "example": "alcoholic"
+                                        },
+                                        "alcohol_content": {
+                                            "type": "number",
+                                            "example": 37.5
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Prohibido (solo admin)"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    },
+                    "422": {
+                        "description": "Datos inválidos"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            }
+        },
+        "/api/ingredients/{id}": {
+            "get": {
+                "tags": [
+                    "Ingredients"
+                ],
+                "summary": "Ver un ingrediente específico",
+                "description": "Devuelve la información de un ingrediente concreto. Solo accesible para usuarios autenticados.",
+                "operationId": "31ceea6e0627b6ebd10d683e8ae3af69",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del ingrediente",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ingrediente encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "Vodka"
+                                        },
+                                        "classification": {
+                                            "type": "string",
+                                            "example": "alcoholic"
+                                        },
+                                        "alcohol_content": {
+                                            "type": "number",
+                                            "example": 40
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Ingrediente no encontrado"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Ingredients"
+                ],
+                "summary": "Actualizar un ingrediente existente",
+                "description": "Permite a los administradores actualizar la información de un ingrediente.",
+                "operationId": "644a667784d857e8a6a8074285b1eb5b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del ingrediente a actualizar",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Ron Blanco"
+                                    },
+                                    "alcohol_content": {
+                                        "type": "number",
+                                        "example": 37.5
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ingrediente actualizado correctamente"
+                    },
+                    "404": {
+                        "description": "Ingrediente no encontrado"
+                    },
+                    "403": {
+                        "description": "Prohibido (solo admin)"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Ingredients"
+                ],
+                "summary": "Eliminar un ingrediente",
+                "description": "Permite a los administradores eliminar un ingrediente del sistema.",
+                "operationId": "f058c3992f4ae8a7e0fbfa77a5450545",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del ingrediente a eliminar",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ingrediente eliminado correctamente"
+                    },
+                    "404": {
+                        "description": "Ingrediente no encontrado"
+                    },
+                    "403": {
+                        "description": "Prohibido (solo admin)"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "passport": {
+                "type": "http",
+                "description": "Usa el token Bearer devuelto tras iniciar sesión o registrarte.",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Auth",
+            "description": "Endpoints para registro, autenticación y cierre de sesión de usuarios."
+        },
+        {
+            "name": "Cocktails",
+            "description": "Gestión de cócteles y operaciones especiales. Solo usuarios autenticados pueden acceder. Los administradores pueden crear, actualizar y eliminar, los usuarios solo visualizar."
+        },
+        {
+            "name": "Ingredients",
+            "description": "Gestión de ingredientes (CRUD) (solo administradores pueden crear, editar o eliminar)"
+        }
+    ],
+    "security": [
+        {
+            "passport": {
+                "type": "apiKey",
+                "description": "Enter token in format (Bearer <token>)",
+                "name": "Authorization",
+                "in": "header"
+            }
+        }
+    ]
+}

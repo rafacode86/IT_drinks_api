@@ -93,7 +93,15 @@ class IngredientController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'type' => 'nullable|string|max:255',
+            'origin' => 'nullable|string|max:255',
+            'classification' => 'required|in:alcoholic,soda,juice,garnish',
+            'alcohol_content' => 'nullable|numeric|min:0|max:100',
         ]);
+
+        $validated['alcohol_content'] = $validated['classification'] === 'alcoholic'
+            ? ($validated['alcohol_content'] ?? 0)
+            : 0;
 
         $ingredient = Ingredient::create($validated);
         return response()->json($ingredient, 201);
@@ -181,7 +189,23 @@ class IngredientController extends Controller
             return response()->json(['message' => 'Ingredient not found'], 404);
         }
 
-        $ingredient->update($request->only('name'));
+        $validated = $request->validate([
+            'name' => 'sometimes|required|string|max:255',
+            'type' => 'sometimes|nullable|string|max:255',
+            'origin' => 'sometimes|nullable|string|max:255',
+            'classification' => 'sometimes|required|in:alcoholic,soda,juice,garnish',
+            'alcohol_content' => 'sometimes|nullable|numeric|min:0|max:100',
+        ]);
+
+        $classification = $validated['classification'] ?? $ingredient->classification;
+
+        if ($classification !== 'alcoholic') {
+            $validated['alcohol_content'] = 0;
+        } elseif (array_key_exists('alcohol_content', $validated)) {
+            $validated['alcohol_content'] = $validated['alcohol_content'] ?? 0;
+        }
+
+        $ingredient->update($validated);
         return response()->json($ingredient, 200);
     }
 

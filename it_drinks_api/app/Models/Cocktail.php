@@ -24,6 +24,7 @@ class Cocktail extends Model
 
     public function calculateAlcoholContent(): float
     {
+
         $ingredients = $this->ingredients;
 
         if ($ingredients->isEmpty()) {
@@ -31,17 +32,21 @@ class Cocktail extends Model
         }
 
         $totalVolume = 0;
-        $totalAlcohol = 0;
+        $totalAlcohol = 0;  
 
         foreach ($ingredients as $ingredient) {
-            $volume = $ingredient->pivot->measure_ml;
-            $alcoholPercentage = $ingredient->alcohol_content;
-
+        
+            $volume = (float) $ingredient->pivot->measure_ml;
             $totalVolume += $volume;
-            $totalAlcohol += ($volume * $alcoholPercentage);
+
+            if ($ingredient->alcohol_content > 0) {
+                $alcoholPercentage = (float) $ingredient->alcohol_content / 100;
+                $totalAlcohol += $volume * $alcoholPercentage;
+            }
         }
 
-        return $totalVolume > 0 ? round($totalAlcohol / $totalVolume, 2) : 0;
-    }
+        return $totalVolume > 0
+            ? round(($totalAlcohol / $totalVolume) * 100, 2): 0;
+        }
 
 }

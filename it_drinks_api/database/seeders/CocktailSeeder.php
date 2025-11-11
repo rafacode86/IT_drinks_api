@@ -21,7 +21,7 @@ class CocktailSeeder extends Seeder
                 ['name' => 'Lime Juice',  'ml' => 30],
             ],
             'Mojito' => [
-                ['name' => 'Rum',         'ml' => 50],
+                ['name' => 'Ron',         'ml' => 50],
                 ['name' => 'Lime Juice',  'ml' => 25],
                 ['name' => 'Simple Syrup','ml' => 15],
                 ['name' => 'Soda Water',  'ml' => 60],
@@ -42,14 +42,14 @@ class CocktailSeeder extends Seeder
             'Negroni' => [
                 ['name' => 'Gin',         'ml' => 30],
                 ['name' => 'Vermouth',    'ml' => 30],
-                ['name' => 'Triple Sec',  'ml' => 10], // ejemplo adaptado
+                ['name' => 'Triple Sec',  'ml' => 10],
             ],
         ];
 
         foreach ($recipes as $cocktailName => $items) {
             $cocktail = Cocktail::updateOrCreate(
                 ['name' => $cocktailName],
-                ['description' => null, 'type' => null]
+                ['description' => $cocktailName . 'cocktail', 'type' => 'alcoholic']
             );
 
             $pivotData = [];

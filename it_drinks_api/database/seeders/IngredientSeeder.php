@@ -29,5 +29,8 @@ class IngredientSeeder extends Seeder
             ['name' => 'Tonic Water',  'type' => 'NOrdic myst',   'origin' => '—',           'classification' => 'soda',      'alcohol_content' => 0],
             ['name' => 'Mint Leaves',  'type' => 'herb',   'origin' => '—',           'classification' => 'garnish',   'alcohol_content' => 0],
         ];
+        foreach ($ingredients as $data) {
+            Ingredient::updateOrCreate(['name' => $data['name']], $data);
+        }
     }
 }

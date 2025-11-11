@@ -47,6 +47,11 @@ class DatabaseSeeder extends Seeder
             
         });
 
+         $this->call([
+            IngredientSeeder::class,
+            CocktailSeeder::class,
+        ]);
+
 
     }
 }

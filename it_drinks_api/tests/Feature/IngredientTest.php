@@ -68,11 +68,13 @@ class IngredientTest extends TestCase
 
         $response = $this->postJson('/api/ingredients', [
             'name' => 'Lime Juice',
+            'classification' => 'juice'
         ]);
 
         $response->assertStatus(201)
                     ->assertJsonFragment([
                         'name' => 'Lime Juice',
+                        'classification' => 'juice',
                     ]);
     }
 
